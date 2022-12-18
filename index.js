@@ -2,13 +2,22 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const bodyParser = require('body-parser');
+var loggedIn = false;
 
 app.use(express.static(__dirname + '/public'));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'login.html'));
+  if (loggedIn == false) {
+    res.sendFile(path.join(__dirname, 'views/login.html'));
+  } else {
+    res.sendFile(path.join(__dirname, 'views/main.html'));
+  }
+});
+
+app.get('/main', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views/main.html'));
 });
 
 app.post('/login', (req, res) => {
@@ -17,7 +26,8 @@ app.post('/login', (req, res) => {
 
   // Validate the login credentials
   if (username === 'admin' && password === 'password') {
-    res.send('Welcome, admin!');
+    loggedIn = true;
+    res.redirect('/');
   } else {
     res.send('Invalid login credentials.');
   }
